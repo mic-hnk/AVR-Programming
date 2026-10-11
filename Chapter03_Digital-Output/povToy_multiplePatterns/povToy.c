@@ -23,9 +23,16 @@ uint8_t checkIsButtonPressed(void)
 	}
 }
 
+void blinkStatusLed(void) {
+	PORTD |= 0b00000010;
+	_delay_ms(50);
+	PORTD &= 0b11111101;
+	_delay_ms(50);
+}
+
 void awaitButtonReleased(void) {
 	while (checkIsButtonPressed()) {
-		_delay_ms(10);
+		blinkStatusLed();
 	}
 }
 
@@ -59,9 +66,9 @@ static const uint8_t pattern1[] = {
 };
 
 static const uint8_t pattern2[] = {
-    0b00000000, 0b00011000, 0b00111100, 0b01111110, 0b11111111,
-	0b01111110, 0b00111100, 0b00011000, 0b00000000, 0b00011000,
-	0b00111100, 0b00011000, 0b00000000
+    0b10000001, 0b10000001, 0b10000001, 0b10000001, 0b10000001,
+	0b10000001, 0b10000001, 0b10000001, 0b10000001, 0b10000001,
+	0b10000001, 0b10000001, 0b10000001
 };
 
 typedef struct {
@@ -82,6 +89,7 @@ int main(void) {
   // -------- Inits --------- //
   DDRB = 0xff; /* Set up all of LED pins for output */
   DDRD &= 0b11111011;  // Set PD2 as input; leave other DDRD bits unchanged
+  DDRD |= 0b00000010;  // set PD1 as output; other pins unchanged
   PORTD |= 0b00000100;  // Enable PD2's internal pull-up
   
   const size_t patternCount = sizeof patterns / sizeof patterns[0];
